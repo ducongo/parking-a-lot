@@ -1,13 +1,15 @@
 # parking-a-lot
 
 
-#Setup
+# Setup
 
 Create a Python Virtual environment
 
 activate the environment
 >pip install tensorflow==1.13.1
+
 >pip install keras
+
 >pip install imgutils
 
 
