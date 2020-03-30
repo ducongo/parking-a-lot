@@ -1,3 +1,17 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:3bcae4274766a27a2abfef5c04744ac484ca2b7d55a020f4d4b491d3a4390f97
-size 245
+# -*- coding: utf-8 -*-
+
+"""
+keras_resnet.classifiers
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+This module implements popular residual classifiers.
+"""
+
+from ._2d import (
+    ResNet18,
+    ResNet34,
+    ResNet50,
+    ResNet101,
+    ResNet152,
+    ResNet200
+)

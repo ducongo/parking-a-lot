@@ -1,3 +1,11 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:ee5adba0ea1f3d741c2aaf52223c320f3e91674d45a570b795ecfa6cfdb6658b
-size 325
+import tensorflow as tf
+
+py_all = all
+
+def depth_to_space(input, scale, data_format=None):
+    ''' Uses phase shift algorithm to convert channels/depth for spatial resolution '''
+    data_format = 'NHWC'
+
+    data_format = data_format.lower()
+    out = tf.depth_to_space(input, scale, data_format=data_format)
+    return out
