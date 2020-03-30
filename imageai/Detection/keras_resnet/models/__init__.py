@@ -1,28 +1,3 @@
-# -*- coding: utf-8 -*-
-
-"""
-keras_resnet.models
-~~~~~~~~~~~~~~~~~~~
-
-This module implements popular residual models.
-"""
-
-from ._2d import (
-    ResNet,
-    ResNet18,
-    ResNet34,
-    ResNet50,
-    ResNet101,
-    ResNet152,
-    ResNet200
-)
-
-from ._time_distributed_2d import (
-    TimeDistributedResNet,
-    TimeDistributedResNet18,
-    TimeDistributedResNet34,
-    TimeDistributedResNet50,
-    TimeDistributedResNet101,
-    TimeDistributedResNet152,
-    TimeDistributedResNet200
-)
+version https://git-lfs.github.com/spec/v1
+oid sha256:4e28e962762bb673c85a15079b0833927c58982f0e7905a85083ab1be2454471
+size 484
