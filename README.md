@@ -25,7 +25,7 @@ To download the video for the recorded parking lot you can get it at the followi
 Follow these steps:
 Open your terminal then run the following commands in the path you want to load the project
 
-< git init
+> git init
 
 >git remote add origin https://github.com/ducongo/parking-a-lot.git
 
