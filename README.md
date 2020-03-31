@@ -20,6 +20,8 @@ download the video captured by Thomas (link should be in the messenger)
 Once thats done download the zip files that contain the modified imageai library that I modified to suit our needs
 and the moldels needed to run the app. They can be found using this link https://drive.google.com/drive/folders/1j3qLyzkak_tzWeucJeeHMKfMUPS69g4a?usp=sharing
 
+To download the video for the recorded parking lot you can get it at the following link: https://l.facebook.com/l.php?u=https%3A%2F%2Fdrive.google.com%2Fdrive%2Ffolders%2F1Ex2g7yv8H5dU3r-5FOIbnxB2GeYZ-cDw%3Ffbclid%3DIwAR1L5W30TVhYww3qr0TOn6-olpgkZUc5obiYy5rLXZs7bEbO0Q9FP5AvoHk&h=AT3j1E9_H89mkUw5__n190Qm2OIgyqcWELgyUk5oRJmMDliK7Ar5TPp0tAVlaDQnXDfDt357tlTjleGQIdYHWizDvtfaNkGbFETQBpngA1NcKiy6RiOt4RqJEZas8fczqUGGNw
+
 Follow these steps:
 Open your terminal then run the following commands in the path you want to load the project
 
