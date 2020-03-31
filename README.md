@@ -35,11 +35,8 @@ Then you will need to create a new directory called input were you will store th
 
 When all thats done run the following command to test run the app
 
-> python Videoanalysis.py
+> python parking_monitoring.py
 
-If you want the app to stop running on windows you need yo press ctrl + pause button to kill opencv windows
+If you want the app to stop running on windows you need yo press ctrl + pause button to kill opencv windows that runs on different threads.
 
-Videoanalysis is the file I am currently toying around with. 
-I had tp modify imageai library so I decided to download the source code and add my changes to it. The file is too big to push 
-on github so I decided to just zip it for now. If anyone has a better solution please do try uploading it without using a zip file
-
+parking_monitoring.py is the main file for the logic of the monitoring process. We need to add logic to detect the state of a parking spot. The thread for scanning the parking lot runs every 10 secs because it is computationaly expensive to feed all the frames of the video through the model.
