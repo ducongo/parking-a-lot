@@ -1,4 +1,4 @@
-import numpy
+import numpy as np
 import cv2
 
 class ParkingDetector:
@@ -17,14 +17,16 @@ class ParkingDetector:
 
 
     def _corner_detector(self, parking_img):
-        #using corner detector to find parking spot
+        vaccant_lots = {}
         src_gray = cv2.cvtColor(parking_img, cv2.COLOR_BGR2GRAY)
+        # parking_img = np.array(parking_img)
+        imgesss2 = []
 
         # Detector parameters
         blockSize = 2
         apertureSize = 3
         k = 0.04
-        thresh = 69
+        thresh = 83
 
         #using Harris corner detector
         dst = cv2.cornerHarris(src_gray, blockSize, apertureSize, k)
@@ -33,20 +35,19 @@ class ParkingDetector:
         dst_norm = np.empty(dst.shape, dtype=np.float32)
         cv2.normalize(dst, dst_norm, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX)
         dst_norm_scaled = cv2.convertScaleAbs(dst_norm)
-
-        empty_parking = []
-
-        for parking_rect in self.parking_layout:
-            numberOfCornor = 0
-            for x in range(parking_rect[0]+5, parking_rect[2]-5):
-                for y in range(parking_rect[1]+5, parking_rect[3]-5):
-                    if int(dst_norm[y,x]) > thresh:
-                        numberOfCornor += 1
-            if numberOfCornor <= 3:
-                cv2.rectangle(parking_img2, (parking_rect[0],parking_rect[1]),(parking_rect[2],parking_rect[3]),(0,255,0),2)
-                empty_parking.append(parking_rect)
-
-        return empty_parking    
+        
+        for key,lots in self.parking_layout.items():
+            for index, (parking_id,parking_rect) in enumerate(lots.items()):
+                numberOfCornor = 0
+                for x in range(parking_rect[0]+4, parking_rect[2]-4):
+                    for y in range(parking_rect[1]+4, parking_rect[3]-4):
+                        if int(dst_norm[y,x]) > thresh:
+                            numberOfCornor += 1
+                if numberOfCornor <= 3:
+                    # cv2.rectangle(parking_img, (parking_rect[0],parking_rect[1]),(parking_rect[2],parking_rect[3]),(0,255,0),2)
+                    vaccant_lots[parking_id] = [parking_rect]
+                # print(f"number of corners: {numberOfCornor}")
+        return vaccant_lots  
 
 
     def _average_detector(self, parking_img):
@@ -72,7 +73,7 @@ class ParkingDetector:
                         diffSum = diffRG + diffGB + diffBR
                         # if the difference between all r,g,b is less than a threshold (30) 
                         # and 255 >r > 0 (to prevent white and black from being detected)
-                        if(diffSum < 30 and r > 0 and r < 225):
+                        if (diffSum < 30 and r > 30 and r < 225):
                             # to see which spots are detected as "grayish" uncomment the line below
                             # parking_img[y][x] = [0,0,255]
                             grayCounter += 1
