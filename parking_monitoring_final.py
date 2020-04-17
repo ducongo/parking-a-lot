@@ -47,12 +47,8 @@ def monitor_state():
 
     global total_spots, parking_dict
 
-    try:
-        pickle_in = open("./parking_layout/parking_map.pickle","rb")
-    except IOError:
-        with ZipFile('./parking_layout/parking_map_pickle.zip', 'r') as pickleZip:
-            pickleZip.extractall('./parking_layout/')
-        pickle_in = open("./parking_layout/parking_map.pickle","rb")
+    with ZipFile('./parking_layout/parking_map_pickle.zip', 'r') as pickleZip:
+        pickleZip.extractall('./parking_layout/')
 
     pickle_in = open("./parking_layout/parking_map.pickle","rb")
     parking_dict = pickle.load(pickle_in)[0]
