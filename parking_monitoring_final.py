@@ -18,6 +18,7 @@ total_spots = 0
 
 
 def main():
+
     fps = FPS().start()
     index = 0
     while fvs.isOpened():
@@ -25,34 +26,35 @@ def main():
         ret, frame = fvs.read()
         index += 1
         frame = imutils.resize(frame, width=1188)
-        #cv2.putText(frame, "Queue Size: {}".format(fvs.Q.qsize()), (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+
         occupied_spots = total_spots - len(vaccant_lots["vaccant"].items())
-        cv2.putText(frame, "Parking Lot Capacity : {}/{}".format(occupied_spots, total_spots), (10, 600), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
-        # print(f'Main id for dict: {id(vaccant_lots)}')
-        # print(f'Vaccant lots before: {vaccant_lots}')
+        cv2.putText(frame, "Parking Lot Capacity: {}/{}".format(occupied_spots, total_spots), (130, 620), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 1)
+        cv2.putText(frame, "Available", (1080, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 1)
+        cv2.putText(frame, "Spots:", (1090, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 1)
+
+        count = 0
         for lot, rect in vaccant_lots["vaccant"].items():
+            count += 1
             cv2.rectangle(frame, (rect[0][0],rect[0][1]),(rect[0][2],rect[0][3]),(0,255,0),2)
-            #print(f'Vaccant lots: {vaccant_lots}')
+            cv2.putText(frame, "{}".format(lot), (1095, 70 + (20 * count)), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 1)
+
         cv2.imshow("Parking CTV camera", frame)
         cv2.waitKey(1)
         fps.update()
-        #time.sleep(0.09)
+        time.sleep(0.05)
     fps.stop()
 
 
 def monitor_state():
+
     pickle_in = open("./parking_layout/parking_map.pickle","rb")
     parking_dict = pickle.load(pickle_in)[0]
     global total_spots
     total_spots = len(parking_dict[0]) + len(parking_dict[1]) + len(parking_dict[2])
-    print(f'Parking Spots: {total_spots}')
     detector = ParkingDetector(parking_dict)
-    # print("-----------------------------------------------------")
-    # print(pickle.load(pickle_in)[0])
-    # print("-----------------------------------------------------")
     while True:
         print(f'Time: {datetime.now().strftime("%H:%M:%S")}')
-        time.sleep(1)
+        time.sleep(0.5)
         frame = fvs.read()[1]
         # print(f"SHAPE BEFORE: {frame.shape}")
         frame = imutils.resize(frame,width=1188)
@@ -61,8 +63,6 @@ def monitor_state():
             vaccant_lots["vaccant"] = detector.detect_vaccant_lots(frame, use_corner = False)
         finally:
             lock.release()
-        # print(vaccant_lots)
-        # print(f'monitor_state id for dict: {id(vaccant_lots)}')
 
 
 
