@@ -11,6 +11,7 @@ import threading
 import sys
 import pickle
 from threading import RLock
+from zipfile import ZipFile
 
 lock = RLock()
 vaccant_lots = {"vaccant":{}}
@@ -27,19 +28,7 @@ def main():
         ret, frame = fvs.read()
         index += 1
         frame = imutils.resize(frame, width=1188)
-
-        occupied_spots = total_spots - len(vaccant_lots["vaccant"].items())
-        cv2.putText(frame, "Parking Lot Capacity: {}/{}".format(occupied_spots, total_spots), (130, 620), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 1)
-        cv2.putText(frame, "Available", (1080, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 1)
-        cv2.putText(frame, "Spots:", (1090, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 1)
-
-        for level in parking_dict:
-            for lot, rect in parking_dict[level].items():
-                x_value = rect[0] + 3
-                y_value = rect[1] - 15
-                if (int(lot[2:]) > 23):
-                    y_value = rect[3] + 15
-                cv2.putText(frame, "{}".format(lot), (x_value, y_value), cv2.FONT_HERSHEY_SIMPLEX, 0.25, (0, 255, 0), 1)
+        frame = displayLabels(frame)    #Show all labels
 
         count = 0
         for lot, rect in vaccant_lots["vaccant"].items():
@@ -57,6 +46,14 @@ def main():
 def monitor_state():
 
     global total_spots, parking_dict
+
+    try:
+        pickle_in = open("./parking_layout/parking_map.pickle","rb")
+    except IOError:
+        with ZipFile('./parking_layout/parking_map_pickle.zip', 'r') as pickleZip:
+            pickleZip.extractall('./parking_layout/')
+        pickle_in = open("./parking_layout/parking_map.pickle","rb")
+
     pickle_in = open("./parking_layout/parking_map.pickle","rb")
     parking_dict = pickle.load(pickle_in)[0]
     total_spots = len(parking_dict[0]) + len(parking_dict[1]) + len(parking_dict[2])
@@ -74,6 +71,25 @@ def monitor_state():
             lock.release()
 
 
+#Shows labels for parking spots, as well as stats on the sides of the video
+def displayLabels(frame):
+    occupied_spots = total_spots - len(vaccant_lots["vaccant"].items())
+    cv2.putText(frame, "Parking Lot Capacity: {}/{}".format(occupied_spots, total_spots), (130, 620), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 1)
+    cv2.putText(frame, "Available", (1080, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 1)
+    cv2.putText(frame, "Spots:", (1090, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 1)
+
+    #Label each parking spot
+    for level in parking_dict:
+        for lot, rect in parking_dict[level].items():
+            x_value = rect[0] + 3
+            y_value = rect[1] - 15
+            if (int(lot[2:]) > 23):
+                y_value = rect[3] + 15
+            cv2.putText(frame, "{}".format(lot), (x_value, y_value), cv2.FONT_HERSHEY_SIMPLEX, 0.25, (0, 255, 0), 1)
+            
+    return frame
+
+
 
 fvs = FileVideoStream("./input/video_black_bars.mp4")
 # Start reading input video file   
@@ -89,10 +105,8 @@ monitor_state_thread = threading.Thread( target=monitor_state)
 threads.append(monitor_state_thread)
 monitor_state_thread.start()
 
-
 for thread in threads:
     thread.join()
-
 
 cv2.destroyAllWindows()
 fvs.stop()
