@@ -17,16 +17,25 @@ lock = RLock()
 vaccant_lots = {"vaccant":{}}
 total_spots = 0
 parking_dict = {}
+stop_threads = False
+
+
+#Stops components in use and sets values to stop threads
+def endProgram():
+    global fvs, stop_threads
+
+    stop_threads = True
+    cv2.destroyAllWindows()
+    fvs.stop()
+    exit()
 
 
 def main():
-
     fps = FPS().start()
-    index = 0
     while fvs.isOpened():
-
         ret, frame = fvs.read()
-        index += 1
+        if (frame is None):
+            break
         frame = imutils.resize(frame, width=1188)
         frame = displayLabels(frame)    #Show all labels
 
@@ -37,14 +46,17 @@ def main():
             cv2.putText(frame, "{}".format(lot), (1095, 70 + (20 * count)), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 1)
 
         cv2.imshow("Parking CTV camera", frame)
-        cv2.waitKey(1)
+        key = cv2.waitKey(1)
+        if (key > 0):
+            break
         fps.update()
         #time.sleep(0.05)
+
     fps.stop()
+    endProgram()
 
 
 def monitor_state():
-
     global total_spots, parking_dict
 
     with ZipFile('./parking_layout/parking_map_pickle.zip', 'r') as pickleZip:
@@ -55,9 +67,8 @@ def monitor_state():
     total_spots = len(parking_dict[0]) + len(parking_dict[1]) + len(parking_dict[2])
     detector = ParkingDetector(parking_dict)
 
-    while True:
-        print(f'Time: {datetime.now().strftime("%H:%M:%S")}')
-        time.sleep(0.5)
+    while not stop_threads:
+        #print(f'Time: {datetime.now().strftime("%H:%M:%S")}')
         frame = fvs.read()[1]
         frame = imutils.resize(frame,width=1188)
         lock.acquire()
@@ -65,11 +76,13 @@ def monitor_state():
             vaccant_lots["vaccant"] = detector.detect_vaccant_lots(frame, use_corner = False)
         finally:
             lock.release()
+        time.sleep(0.5)
 
 
 #Shows labels for parking spots, as well as stats on the sides of the video
 def displayLabels(frame):
     occupied_spots = total_spots - len(vaccant_lots["vaccant"].items())
+    cv2.putText(frame, "Press any key to exit", (850, 620), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 1)
     cv2.putText(frame, "Parking Lot Capacity: {}/{}".format(occupied_spots, total_spots), (130, 620), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 1)
     cv2.putText(frame, "Vacant", (1080, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 1)
     cv2.putText(frame, "Spots:", (1090, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 1)
@@ -86,9 +99,8 @@ def displayLabels(frame):
     return frame
 
 
-
-fvs = FileVideoStream("./input/video_black_bars.mp4")
 # Start reading input video file   
+fvs = FileVideoStream("./input/video_black_bars.mp4")
 fvs.start()
 
 threads = []
@@ -103,6 +115,3 @@ monitor_state_thread.start()
 
 for thread in threads:
     thread.join()
-
-cv2.destroyAllWindows()
-fvs.stop()
