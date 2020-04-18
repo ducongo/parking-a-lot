@@ -71,7 +71,7 @@ def monitor_state():
 def displayLabels(frame):
     occupied_spots = total_spots - len(vaccant_lots["vaccant"].items())
     cv2.putText(frame, "Parking Lot Capacity: {}/{}".format(occupied_spots, total_spots), (130, 620), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 1)
-    cv2.putText(frame, "Available", (1080, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 1)
+    cv2.putText(frame, "Vacant", (1080, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 1)
     cv2.putText(frame, "Spots:", (1090, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 1)
 
     #Label each parking spot
