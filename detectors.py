@@ -18,7 +18,8 @@ class ParkingDetector:
 
     def _corner_detector(self, parking_img):
         vaccant_lots = {}
-        src_gray = cv2.cvtColor(parking_img, cv2.COLOR_BGR2GRAY)
+        masked = self.select_rgb_white_yellow(parking_img)
+        src_gray = cv2.cvtColor(masked, cv2.COLOR_BGR2GRAY)
         # parking_img = np.array(parking_img)
         imgesss2 = []
 
@@ -27,6 +28,11 @@ class ParkingDetector:
         apertureSize = 3
         k = 0.04
         thresh = 83
+
+        # blockSize = 2
+        # apertureSize = 3
+        # k = 0.06
+        # thresh = 83
 
         #using Harris corner detector
         dst = cv2.cornerHarris(src_gray, blockSize, apertureSize, k)
@@ -43,16 +49,25 @@ class ParkingDetector:
                     for y in range(parking_rect[1]+4, parking_rect[3]-4):
                         if int(dst_norm[y,x]) > thresh:
                             numberOfCornor += 1
-                if numberOfCornor <= 3:
+                        
+                if numberOfCornor <= 0:
                     # cv2.rectangle(parking_img, (parking_rect[0],parking_rect[1]),(parking_rect[2],parking_rect[3]),(0,255,0),2)
-                    vaccant_lots[parking_id] = [parking_rect]
+                    
+                    crop_img = src_gray[parking_rect[1]:parking_rect[3] + 1, parking_rect[0]:parking_rect[2] + 1]
+                    if np.sum(crop_img) > 166000:
+                        vaccant_lots[parking_id] = [parking_rect]
+                        print(np.sum(crop_img))
                 # print(f"number of corners: {numberOfCornor}")
+        print("-------------------------------------------------------")
         return vaccant_lots  
 
 
     def _average_detector(self, parking_img):
         vaccant_lots = {}
+        masked = self.select_rgb_white_yellow(parking_img)
+        src_gray = cv2.cvtColor(masked, cv2.COLOR_BGR2GRAY)
         # iterate over the green parking lots defined in the previous sections
+        # parking_img = self.select_rgb_white_yellow(parking_img)
         for key,lots in self.parking_layout.items():
             for index, (parking_id,parking_rect) in enumerate(lots.items()):
                 grayCounter = 0
@@ -82,7 +97,26 @@ class ParkingDetector:
                     # find percent gray pixels inside the lot by dividing gray counter with lot size
                     percentGray = grayCounter/pSize
                     # if the percent of gray in the lot is greater than a threshold, then we have an empty lot
-                    if percentGray > 0.93:
+                    if not (0.93 > percentGray > 0.90) and percentGray > 0.90:
+                        crop_img = src_gray[parking_rect[1]:parking_rect[3] + 1, parking_rect[0]:parking_rect[2] + 1]
+                        if np.sum(crop_img) > 466000:
+                            vaccant_lots[parking_id] = [parking_rect]
+                            # print(np.sum(crop_img))
                         # cv2.rectangle(parking_img, (parking_rect[0],parking_rect[1]),(parking_rect[2],parking_rect[3]),(0,255,0),2)
                         vaccant_lots[parking_id] = [parking_rect]     
         return vaccant_lots
+
+
+    def select_rgb_white_yellow(self, parking_img): 
+        # white color mask
+        lower = np.uint8([120, 120, 120])
+        upper = np.uint8([255, 255, 255])
+        white_mask = cv2.inRange(parking_img, lower, upper)
+        # yellow color mask
+        lower = np.uint8([190, 190,   0])
+        upper = np.uint8([255, 255, 255])
+        yellow_mask = cv2.inRange(parking_img, lower, upper)
+        # combine the mask
+        mask = cv2.bitwise_or(white_mask, yellow_mask)
+        masked = cv2.bitwise_and(parking_img, parking_img, mask = mask)
+        return masked
