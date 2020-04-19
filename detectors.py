@@ -88,7 +88,7 @@ class ParkingDetector:
                         diffSum = diffRG + diffGB + diffBR
                         # if the difference between all r,g,b is less than a threshold (30) 
                         # and 255 >r > 0 (to prevent white and black from being detected)
-                        if (diffSum < 30 and r > 30 and r < 225):
+                        if (diffSum < 30 and r > 55 and r < 225):
                             # to see which spots are detected as "grayish" uncomment the line below
                             # parking_img[y][x] = [0,0,255]
                             grayCounter += 1
