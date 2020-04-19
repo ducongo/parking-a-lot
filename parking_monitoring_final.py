@@ -31,6 +31,10 @@ def endProgram():
 
 
 def main():
+    if(sys.argv[1] == str(1)):
+        print("Using corner detection")
+    else:
+        print("Using average detection")
     fps = FPS().start()
     while fvs.isOpened():
         ret, frame = fvs.read()
@@ -72,8 +76,12 @@ def monitor_state():
         frame = fvs.read()[1]
         frame = imutils.resize(frame,width=1188)
         lock.acquire()
+        if(sys.argv[1] == str(1)):
+            use_corner = True
+        else:
+            use_corner = False
         try:
-            vaccant_lots["vaccant"] = detector.detect_vaccant_lots(frame, use_corner = False)
+            vaccant_lots["vaccant"] = detector.detect_vaccant_lots(frame, use_corner=use_corner)
         finally:
             lock.release()
         time.sleep(0.5)
