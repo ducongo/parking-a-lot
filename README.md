@@ -70,7 +70,7 @@ pip install tensorflow==1.13.1 (deprecated)
 pip install keras (deprecated)
 pip install numpy
 pip install opencv-python
-pip install imgutils
+pip install imutils
 ```
 
 Since I had issues with pushing large files to the repo I added them to Google drive in zip files.
