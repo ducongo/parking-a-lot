@@ -62,32 +62,26 @@ In terms of realisticness, this project depends mostly on the data that we use t
 
 ## Setup
 
-Create a Python Virtual environment
-
-activate the environment
+1. (*Optional*) Create a Python Virtual environment and activate the environment.
+2. With Python (and pip) installed, run the following commands:
 ```
 pip install numpy
-pip install opencv-python
 pip install imutils
 pip install opencv-python
-
 ```
 
 ## Running the App
 
 Follow these steps:
-1. Open your terminal then run the following commands in the path you want to load the project
+1. Open your terminal then run the following commands in the path you want to load the project:
 ```
-git init
-git remote add origin https://github.com/ducongo/parking-a-lot.git
-git pull origin master
+git clone https://github.com/ducongo/parking-a-lot
+cd parking-a-lot
 ```
-2. Type the following command.
-    To run the app you need to specify which algorithmn you want to run (0 for average detector and 1 for corner detector)
-```
-python main.py 0
-```
-or 
-```
-python main.py 1
-```
+2. Type one of the following commands to start the application. To run the app, you must specify which algorithm you would like to use (0 for Average Detector, and 1 for Corner Detector)
+
+Average Detector: `python main.py 0`
+
+Corner Detector: `python main.py 1`
+
+3. To exit the program, press any key or wait until the parking lot footage has ended.
