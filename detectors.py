@@ -29,11 +29,6 @@ class ParkingDetector:
         k = 0.04
         thresh = 83
 
-        # blockSize = 2
-        # apertureSize = 3
-        # k = 0.06
-        # thresh = 83
-
         #using Harris corner detector
         dst = cv2.cornerHarris(src_gray, blockSize, apertureSize, k)
 
@@ -56,9 +51,9 @@ class ParkingDetector:
                     crop_img = src_gray[parking_rect[1]:parking_rect[3] + 1, parking_rect[0]:parking_rect[2] + 1]
                     if np.sum(crop_img) > 166000:
                         vaccant_lots[parking_id] = [parking_rect]
-                        print(np.sum(crop_img))
+                        #print(np.sum(crop_img))
                 # print(f"number of corners: {numberOfCornor}")
-        print("-------------------------------------------------------")
+        #print("-------------------------------------------------------")
         return vaccant_lots  
 
 
